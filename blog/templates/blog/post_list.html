@@ -6,7 +6,7 @@
 </head>
 <body>
     <h1>Blog</h1>
-    {% for p in posts %} <!--views에서 왼쪽에 있는 posts -->
+    {% for p in post_list%} <!--views에서 왼쪽에 있는 posts / post_list -->
         <h2> <a href="{{p.get_absolute_url}}"> {{p.title}} </a> </h2>  <!-- 데베에 글이 3개 있어서 3번 반복-->
         <h3> {{p.created_at}} </h3>
         <p> {{p.content}} </p>
