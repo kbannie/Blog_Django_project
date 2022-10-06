@@ -133,3 +133,4 @@ dmypy.json
 # 내가 작성한 것들
 .idea/
 migrations/
+_media/

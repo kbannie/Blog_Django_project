@@ -15,10 +15,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),  #IP주소/admin
     path('blog/', include('blog.urls')), #blog 폴더에 있는 urls를 불러오기  #IP주소/blog
     path('', include('single_pages.urls')),  #IP주소/
-
 ]
+
+urlpatterns+=static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
