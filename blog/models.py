@@ -7,6 +7,7 @@ class Post(models.Model):
 
     head_image=models.ImageField(upload_to='blog/images/%Y/%m/%d/',blank=True)
     #%Y 2022(4자리) / %y 22(2자리)
+    file_upload=models.FileField(upload_to='blog/files/%Y/%m/%d/', blank=True)
 
     created_at=models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
