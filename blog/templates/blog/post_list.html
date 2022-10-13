@@ -27,7 +27,7 @@
 						<a class="nav-link" href="blog_list.html">Blog</a>
 					</li>
 					<li class="nav-item">
-						<a class="nav-link" href="about_me.html">About me</a>
+						<a class="nav-link" href="about_me.html">AboutMe</a>
 					</li>
 					<li class="nav-item dropdown">
 						<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
@@ -84,30 +84,34 @@
 
 	<div class="container">
 		<div class="row">
-			<div class="col-md-8 col-lg-9">
+			<div class="col-md-8 col-lg-9" id="main-area">
 				<h2>Blog</h2>
 				<!--Featured blog  post-->
-				{% for p in post_list %}
-				<div class="card mb-4">
-					{% if p.head_image %}
-					<img class="card-img-top" src="{{p.head_image.url}}" alt="{{p}}의 head_image" />
-					{% else %}
-					<img class="card-img-top" src="https://picsum.photos/seed/{{p.pk}}/800/200" alt="random image"/>
-					{% endif %}
-					<div class="card-body">
-						<h2 class="card-title">{{p.title | upper}}</h2> <!--upper : 대문자로 출력하기  -->
-						{% if p.hook_text %}
-						<h5 class="text-muted">{{p.hook_text}}</h5>
+				{% if post_list.exists %}
+					{% for p in post_list %}
+					<div class="card mb-4">
+						{% if p.head_image %}
+						<img class="card-img-top" src="{{p.head_image.url}}" alt="{{p}}의 head_image" />
+						{% else %}
+						<img class="card-img-top" src="https://picsum.photos/seed/{{p.pk}}/800/200" alt="random image"/>
 						{% endif %}
-						<p class="card-text">{{p.content | truncatechars:100}}</p> <!--truncatechars:100 필터주기(100자만 보여주기) -->
-						<a class="btn btn-primary" href="{{p.get_absolute_url}}">Read more →</a>
+						<div class="card-body">
+							<h2 class="card-title">{{p.title | upper}}</h2> <!--upper : 대문자로 출력하기  -->
+							{% if p.hook_text %}
+							<h5 class="text-muted">{{p.hook_text}}</h5>
+							{% endif %}
+							<p class="card-text">{{p.content | truncatechars:100}}</p> <!--truncatechars:100 필터주기(100자만 보여주기) -->
+							<a class="btn btn-primary" href="{{p.get_absolute_url}}">Read more →</a>
+						</div>
+						<div class="card-footer">
+							<div class="small text-muted">{{p.created_at | date:"Y-m-d h:m:s"}}</div>
+							<a href="#">작성자(추후 개발 예정)</a>
+						</div>
 					</div>
-					<div class="card-footer">
-						<div class="small text-muted">{{p.created_at | date:"Y-m-d h:m:s"}}</div>
-						<a href="#">작성자(추후 개발 예정)</a>
-					</div>
-				</div>
-				{% endfor %}
+					{% endfor %}
+					{% else %}
+						<h5>아무 게시물이 없습니다.</h5>
+				{% endif %}
 				<!-- Pagination-->
 				<nav aria-label="Pagination">
 					<hr class="my-0" />
