@@ -60,14 +60,14 @@ USE_TZ = False
 ### (1) FBV
 #### a. 블로그 리스트 페이지
 
-main/urls.py
+- main/urls.py
 ```python
 from django.urls import path, include 
 urlpatterns=[
     path('blog/', include('blog.urls'))
 ]
 ```
-blog/urls.py 만들기
+- blog/urls.py 만들기
 ```python
 from django.urls import path
 from . import views
@@ -76,7 +76,7 @@ urlpatterns=[
 ]
 ```
 
-blog/views.py
+- blog/views.py
 ```python
 from .models import Post
 
@@ -87,7 +87,7 @@ def index(request):
     #posts 인자는 template 폴더에서 찾음  #오른쪽 posts1가 위에서 선언한 posts1
 ```
 
-blog/templates/blog/index.html 만들기
+- blog/templates/blog/index.html 만들기
 ```html
 {% for p in posts %}
     <h2>{{p.title}}</h2>
@@ -98,21 +98,114 @@ blog/templates/blog/index.html 만들기
 
 ---
 #### b.블로그 상세 페이지
-blog/urls.py 만들기
+- blog/urls.py 만들기
 ```python
-path('<int:pk>/', views.single_post_page)
+path('<int:pk>/', views.single_post_page) #pk인수가 들어왔을 때 single_post_page 함수 호출
 ```
 
-blog/views.py
+- blog/views.py
 ```python
 def single_post_page(request,pk):  #pk에 따라 불러오는 글이 달라지니 views 쪽에 pk도 전달해야 함
      post2=Post.objects.get(pk=pk)  #get : 특정한 거만 가져오기  #Post가 가지고 있는 필드 이름=위에서 받은 인자
      return render(request,'blog/single_post_page.html',{'post':post2})
 ```
 
-blog/templates/blog/single_post_page.html 만들기
+- blog/templates/blog/single_post_page.html 만들기
 ```python
 <h1>{{post.title}}</h1>
 <h3>{{post.created_at}}</h3>
 <p>{{post.content}}</p>
+<hr />
+<h4>여기에 댓글 작성</h4>
+```
+
+
+---
+### (2) CBV
+클래스 안에 있는 메서드를 호출하는 형태로 view 만들어주기
+
+ListView, DetailView를 제공해줌
+
+ListView : 포스트 목록 페이지, 모델명_list.html을 인식함, as_view() 메서드(ListView에서 제공)를 부름
+DetailView : 모델명_detail.html을 인식함
+
+- blog/urls.py
+```python
+#urlpatterns에 작성해둔 코드들 삭제 
+urlpatterns=[
+    path('',views.PostList.as_view()),  #views.모델명List.as_view()을 호출하기
+    path('<int:pk>/',views.PostDetail.as_view())  #views.모델명Detail.as_view()을 호출하기
+]
+```
+- blog/views.py
+```python
+#작성해둔 함수들 다 삭제
+from django.views.generic import ListView, DetailView
+class PostList(ListView):  #ListView를 상속받음
+    model=Post #사용할 모델명인 Post를 정의해주기
+    ordering='-pk' #최신순으로 보여주기
+    #템플릿을 통해 전달되는데 자동으로 모델명_list.html과 연결됨  -> post_list.html
+    #자동으로 전달되는 파라미터 : 모델명_list -> post_list
+
+class PostDetail(DetailView):
+    model=Post
+    #템플릿은 자동으로 모델명_detail.html과 연결됨 -> post_detail.html
+    #자동으로 전달되는 파라미터 : 모델명 -> post
+```
+
+- index.html -> post_list.html로 이름명을 변경
+
+    {% for p in posts %}에서 파라미터가 post_list로 되었으니 {% for p in post_list %}로 바꿔주기
+
+
+- single_post_page.html -> post_detail.html로 이름명을 변경
+
+### (3) 링크를 통해 블로그 페이지 이동하기
+- blog/models.py
+```python
+def get_absolute_url(self):
+    return f'/blog/{self.pk}/' #fstring 문자열을 리턴해주기
+```
+- blog/templates/blog/index.html
+```python
+<h2><a href="{{p.get_absolute_url}}">{{p.title}}</a></h2> 
+#이렇게 수정해주면 포스트 제목을 누르면 디테일 페이지로 이동
+```
+
+### (4) 대문페이지 , 자기소개 페이지만들기
+- main/urls.py
+```python
+path('',include('single_pages.urls')) #ip주소/
+```
+- single_pages/urls.py 만들기
+```python
+from django.urls import path
+from . import views
+
+urlpatterns=[ #ip주소/
+    path('',views.landing), #ip주소/
+    path('about_me/',views.about_me) #ip주소/about_me/
+]
+```
+- single_pages/views.py
+```python
+def landing(request):
+    return render(request, 'single_pages/landing.html')
+
+def about_me(request):
+    return render(request,'single_pages/about_me.html')
+```
+- single_pages/templates/single_pages/landing.html 만들기
+```python
+<nav>
+    <a href="/blog/">Blog</a>
+    <a href="/about_me/">About Me</a>
+</nav>
+```
+- single_pages/templates/single_pages/about_me.html 만들기
+```python
+<nav>
+    <a href="/blog/">Blog</a>
+    <a href="/about_me/">About Me</a>
+</nav>
 ```

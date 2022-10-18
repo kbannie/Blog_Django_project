@@ -91,7 +91,7 @@
 					{% for p in post_list %}
 					<div class="card mb-4">
 						{% if p.head_image %}
-						<img class="card-img-top" src="{{p.head_image.url}}" alt="{{p}}의 head_image" />
+						<img class="card-img-top" src="{{p.head_image.url}}" alt="{{p.title}}의 head_image" />
 						{% else %}
 						<img class="card-img-top" src="https://picsum.photos/seed/{{p.pk}}/800/200" alt="random image"/>
 						{% endif %}
