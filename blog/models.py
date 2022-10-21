@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 import os
 
 # Model이 변경될 때 마다 꼭 해주기!!!
@@ -20,10 +21,10 @@ class Post(models.Model): #Post 모델 생성
     updated_at=models.DateTimeField(auto_now=True)
 
     #추후 author 작성
-
+    author=models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 
     def __str__(self):  #Model안의 내용을 화면에 출력하는 기능
-        return f'[{self.pk}]{self.title}:{self.created_at}'  #게시글을 만들 때 마다 고유의 키를 부여함 -> pk(primary key)
+        return f'[{self.pk}]{self.title}::{self.author}:{self.created_at}'  #게시글을 만들 때 마다 고유의 키를 부여함 -> pk(primary key)
 
     def get_absolute_url(self):
         return f'/blog/{self.pk}/'   #문자열 만들기
@@ -38,5 +39,4 @@ class Post(models.Model): #Post 모델 생성
         # b.docx -> b docx
         # c.xlsx -> c xlsx
         # 하지만 a.b.c.txt -> a b c txt  1번지로 하면 b이니 마지막에 있는 것으로 지정하기 [-1]
-
 
