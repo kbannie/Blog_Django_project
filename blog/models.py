@@ -6,7 +6,17 @@ import os
 # python manage.py makemigrations
 # python manage.py migrate
 
-# Create your models here.
+class Tag(models.Model):
+    name=models.CharField(max_length=50, unique=True)
+    slug=models.SlugField(max_length=200, unique=True, allow_unicode=True)
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return f'/blog/tag/{self.slug}/'
+
+
 class Category(models.Model):
     name=models.CharField(max_length=50, unique=True)
     slug=models.SlugField(max_length=200, unique=True, allow_unicode=True)
@@ -36,6 +46,7 @@ class Post(models.Model): #Post 모델 생성
     author=models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 
     category=models.ForeignKey(Category, null=True, blank=True, on_delete=models.SET_NULL)
+    tags=models.ManyToManyField(Tag, blank=True)
 
     def __str__(self):  #Model안의 내용을 화면에 출력하는 기능
         return f'[{self.pk}]{self.title}::{self.author}:{self.created_at}'  #게시글을 만들 때 마다 고유의 키를 부여함 -> pk(primary key)
