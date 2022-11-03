@@ -13,6 +13,18 @@
     ...
 </head>
 ```
+- nav 주소 수정 (이때 하는 건지 확실하지 않음....)
+```python
+<li class="nav-item active">
+						<a class="nav-link" href="/">Home</span></a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="/blog/">Blog</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="/about_me/">AboutMe</a>
+					</li>
+```
 - Featured blog  post 부분 수정
 ```python
 {% for p in post_list %}
@@ -131,15 +143,15 @@ python manage.py migrate
 - admin 페이지에서 이미지 업로드하기
 - 업로드 된 이미지를 웹페이지에 보여주기
   - blog/templates/blog/post_list.html
-  ```python
-  <div class="card mb-4"> #위치 확인용
-    {% if p.head_image %}  #이미지를 업로드 했을 때
+  ```html
+  <div class="card mb-4"> <!--위치 확인용-->
+    {% if p.head_image %}  <!--이미지를 업로드 했을 때-->
     <img class="card-img-top" src="{{p.head_image.url}}" alt="{{p.title}}의 head_image" />
      #p.head_image.url 과 연결하기     
-    {% else %}  #이미지를 업로드하지 않았을 때
+    {% else %}  <!--이미지를 업로드하지 않았을 때-->
     <img class="card-img-top" src="https://picsum.photos/seed/{{p.pk}}/800/200" alt="random image"/>
-    #/seed/{{p.pk}} : pk값에 따라 고유한 이미지 부여 
-    #/800/200 : 가로/세로 지정    
+    <!--/seed/{{p.pk}} : pk값에 따라 고유한 이미지 부여--> 
+    <!--/800/200 : 가로/세로 지정    -->
     {% endif %}
   ```
   - blog/templates/blog/post_detail.html

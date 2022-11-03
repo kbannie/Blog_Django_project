@@ -29,6 +29,7 @@ ex) 'blog'
 ```py
 class Post(models.Model):
     title=models.CharField(max_length=30)
+    content=models.TextField()
 ```
 ####(2) app / admin.py 모델 등록
 ```py
@@ -45,6 +46,7 @@ app/models.py
 ```py
 class Post(models.Model):
     created_at=models.DateTimeField(auto_now_add=True) #시간 자동 부여
+    updated_at=models.DateTimeField(auto_now=True)
     
     def __str__(self):  #Model안의 내용을 화면에 출력하는 기능
         return f'[{self.pk}]{self.title}:{self.created_at}'  
@@ -128,10 +130,20 @@ ListView, DetailView를 제공해줌
 
 ListView : 포스트 목록 페이지, 모델명_list.html을 인식함, as_view() 메서드(ListView에서 제공)를 부름
 DetailView : 모델명_detail.html을 인식함
-
-- blog/urls.py
+- main/urls.py
+```python
+from django.urls import path, include 
+urlpatterns=[
+    path('admin/', admin.site.urls),  #IP주소/admin
+    path('blog/', include('blog.urls')), #blog 폴더에 있는 urls를 불러오기  #IP주소/blog
+]
+```
+- blog/urls.py 만들기
 ```python
 #urlpatterns에 작성해둔 코드들 삭제 
+from django.urls import path
+from . import views
+
 urlpatterns=[
     path('',views.PostList.as_view()),  #views.모델명List.as_view()을 호출하기
     path('<int:pk>/',views.PostDetail.as_view())  #views.모델명Detail.as_view()을 호출하기
@@ -139,7 +151,7 @@ urlpatterns=[
 ```
 - blog/views.py
 ```python
-#작성해둔 함수들 다 삭제
+from .models import Post
 from django.views.generic import ListView, DetailView
 class PostList(ListView):  #ListView를 상속받음
     model=Post #사용할 모델명인 Post를 정의해주기
@@ -152,13 +164,25 @@ class PostDetail(DetailView):
     #템플릿은 자동으로 모델명_detail.html과 연결됨 -> post_detail.html
     #자동으로 전달되는 파라미터 : 모델명 -> post
 ```
-
-- index.html -> post_list.html로 이름명을 변경
-
-    {% for p in posts %}에서 파라미터가 post_list로 되었으니 {% for p in post_list %}로 바꿔주기
-
-
-- single_post_page.html -> post_detail.html로 이름명을 변경
+- blog/templates/blog/post_list.html 만들기
+```python
+{% for p in post_list %}
+    <h2>{{p.title}}</h2>
+    <h3>{{p.created_at}}</h3>
+    <p>{{p.content}}</p>
+{% endfor %}
+```
+- blog/templates/blog/post_detail.html 만들기
+```python
+<head>
+    <title>Blog Post - {{post.title}}</title>
+</head>
+<h1>{{post.title}}</h1>
+<h3>{{post.created_at}}</h3>
+<p>{{post.content}}</p>
+<hr />
+<h4>여기에 댓글 작성</h4>
+```
 
 ### (3) 링크를 통해 블로그 페이지 이동하기
 - blog/models.py
@@ -166,11 +190,20 @@ class PostDetail(DetailView):
 def get_absolute_url(self):
     return f'/blog/{self.pk}/' #fstring 문자열을 리턴해주기
 ```
-- blog/templates/blog/index.html
+- blog/templates/blog/post_list.html
 ```python
 <h2><a href="{{p.get_absolute_url}}">{{p.title}}</a></h2> 
 #이렇게 수정해주면 포스트 제목을 누르면 디테일 페이지로 이동
 ```
+
+
+
+
+
+
+
+
+
 
 ### (4) 대문페이지 , 자기소개 페이지만들기
 - main/urls.py
@@ -186,7 +219,7 @@ urlpatterns=[ #ip주소/
     path('',views.landing), #ip주소/
     path('about_me/',views.about_me) #ip주소/about_me/
 ]
-```
+
 - single_pages/views.py
 ```python
 def landing(request):

@@ -7,6 +7,18 @@ import os
 # python manage.py migrate
 
 # Create your models here.
+class Category(models.Model):
+    name=models.CharField(max_length=50, unique=True)
+    slug=models.SlugField(max_length=200, unique=True, allow_unicode=True)
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return f'/blog/category/{self.slug}'
+    class Meta:
+        verbose_name_plural='Categories'
+
 class Post(models.Model): #Post 모델 생성
     title=models.CharField(max_length=30) #Post 모델의 필드 생성  #CharField():길이 제한을 해줄 때
     hook_text=models.CharField(max_length=100,blank=True) #사용자가 미리보기 제공 안해도 ok
@@ -22,6 +34,8 @@ class Post(models.Model): #Post 모델 생성
 
     #추후 author 작성
     author=models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+
+    category=models.ForeignKey(Category, null=True, blank=True, on_delete=models.SET_NULL)
 
     def __str__(self):  #Model안의 내용을 화면에 출력하는 기능
         return f'[{self.pk}]{self.title}::{self.author}:{self.created_at}'  #게시글을 만들 때 마다 고유의 키를 부여함 -> pk(primary key)

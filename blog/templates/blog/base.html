@@ -5,19 +5,19 @@
 	<meta charset="UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>{% block head_title %}Blog{% endblock %}</title>
+	<title>{% block head_title %}Blog{% endblock %}</title>  <!--title도 바뀌는 것이니 block으로 넣어주기 / post_detail에만 선언해줌-->
 	<link href="{% static 'blog/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" media="screen"></link>
 	<script src="https://kit.fontawesome.com/87c08dff42.js" crossorigin="anonymous"></script>
 </head>
 
 <body>
-	{% include 'blog/navbar.html' %}
+	{% include 'blog/navbar.html' %}  <!--navbar 추가하기-->
 
 	<div class="container">
 		<div class="row">
 			<div class="col-md-8 col-lg-9" id="main-area">
-				{% block main_area %}
-                {% endblock %}
+				{% block main_area %} <!--main_area 지워주고 block으로 넣어주기 -->
+                {% endblock %}  <!--block내용은 post_detail, post_list에 있음 -->
 			</div>
 			<div class="col-md-4 col-lg-3">
 				{% include 'blog/sidebar.html' %}
