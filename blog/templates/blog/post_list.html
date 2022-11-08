@@ -1,5 +1,12 @@
 {% extends 'blog/base.html' %} <!--다른 파일 불러와서 복사하기-->
 {% block main_area %} <!-- base.html에서 block으로 넣은 부분이 여기인거임-->
+				{% if user.is_authenticated %}
+					{% if user.is_superuser or user.is_staff %}
+						<a href="/blog/create_post/" role="button" class="btn btn-info btn-sm float-right">
+							<i class="fas fa-pen"></i> New Post
+						</a>
+					{% endif %}
+				{% endif %}
 				<h2>Blog
 					{% if category %}
 					- <span class="badge badge-secondary">{{category}}</span>
