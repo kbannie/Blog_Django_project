@@ -3,11 +3,12 @@ from .models import Post, Category, Tag
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
+from django.utils.text import slugify
 
 #CBV 사용했을 때
 class PostUpdate(LoginRequiredMixin, UpdateView):
     model = Post
-    fields=['title','hook_text', 'content','head_image','file_upload','category','tags']
+    fields=['title','hook_text', 'content','head_image','file_upload','category'] #,'tags'
 
     template_name = 'blog/post_update_form.html'
 
@@ -17,15 +18,36 @@ class PostUpdate(LoginRequiredMixin, UpdateView):
         else:
             raise PermissionDenied
 
+    def form_valid(self, form): #여기 수정 필요 있음 11.10 2:37
+        response = super(PostUpdate, self).form_valid(form)
+        tags_str = self.request.POST.get('tags_str')
+        if tags_str:
+            tags_str = tags_str.strip()
+            tags_str = tags_str.replace(',', ';')
+            tags_list = tags_str.split(';')
+            for t in tags_list:
+                t = t.strip()
+                tag, is_tag_created = Tag.objects.get_or_create(name=t)
+                if is_tag_created:
+                    tag.slug = slugify(t, allow_unicode=True)
+                    tag.save()
+                self.object.tags.add(tag)
+        return response
+
     def get_context_data(self, *, object_list=None, **kwargs):
         context=super(PostUpdate, self).get_context_data()
+        if self.object.tags.exists():
+            tags_str_list=list()
+            for t in self.object.tags.all():
+                tags_str_list.append(t.name)
+            context['tage_str_default'] = ';'.join(tags_str_list)
         context['categories']=Category.objects.all()
         context['no_category_post_count']=Post.objects.filter(category=None).count
         return context
 
 class PostCreate(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model=Post
-    fields=['title','hook_text', 'content','head_image','file_upload','category']
+    fields=['title','hook_text', 'content','head_image','file_upload','category'] #,'tags'
 
     def test_func(self):
         return self.request.user.is_superuser or self.request.user.is_staff
@@ -33,9 +55,22 @@ class PostCreate(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 
     def form_valid(self, form):
         current_user=self.request.user
-        if current_user.is_authenticated and (current_user.is_superusr or current_user.is_staff):
+        if current_user.is_authenticated and (current_user.is_superuser or current_user.is_staff):
             form.instance.author=current_user
-            return super(PostCreate, self).form_valid(form)
+            response=super(PostCreate, self).form_valid(form)
+            tags_str=self.request.POST.get('tags_str')
+            if tags_str:
+                tags_str=tags_str.strip()
+                tags_str=tags_str.replace(',',';')
+                tags_list=tags_str.split(';')
+                for t in tags_list:
+                    t=t.strip()
+                    tag, is_tag_created=Tag.objects.get_or_create(name=t)
+                    if is_tag_created:
+                        tag.slug=slugify(t, allow_unicode=True)
+                        tag.save()
+                    self.object.tags.add(tag)
+            return response
         else:
             return redirect('/blog/')
 
