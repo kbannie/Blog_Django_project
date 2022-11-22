@@ -65,3 +65,15 @@ class Post(models.Model): #Post 모델 생성
         # c.xlsx -> c xlsx
         # 하지만 a.b.c.txt -> a b c txt  1번지로 하면 b이니 마지막에 있는 것으로 지정하기 [-1]
 
+class Comment(models.Model):
+    post=models.ForeignKey(Post, on_delete=models.CASCADE)
+    author=models.ForeignKey(User, on_delete=models.CASCADE)
+    content=models.TextField()
+    created_at=models.DateTimeField(auto_now_add=True)
+    modified_at=models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f'{self.author} : {self.content}'
+
+    def get_absolute_url(self):
+        return f'{self.post.get_absolute_url()}#comment-{self.pk}'
