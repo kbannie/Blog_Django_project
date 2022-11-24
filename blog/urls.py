@@ -9,7 +9,8 @@ urlpatterns=[
     path('create_post/', views.PostCreate.as_view()),
     path('update_post/<int:pk>/', views.PostUpdate.as_view()),
     path('category/<str:slug>/', views.category_page), #IP주소/blog/category/slug/
-    path('tag/<str:slug>/', views.tag_page) #IP주소/blog/tag/slug/
+    path('tag/<str:slug>/', views.tag_page), #IP주소/blog/tag/slug/
+    path('search/<str:q>/', views.PostSearch.as_view())
 
     # path('',views.index),  #IP주소/blog  #views 연결하기  #.index : 함수명
     # path('<int:pk>/', views.single_post_page)   #int형으로 옴 , 타입은 pk로,
