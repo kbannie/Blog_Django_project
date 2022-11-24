@@ -88,6 +88,7 @@ class PostCreate(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 class PostList(ListView):
     model=Post
     ordering = '-pk'
+    paginate_by = 5
     # 템플릿 모델명_list.html : post_list.html4
     # 파라미터 모델명_list : post_list
 
