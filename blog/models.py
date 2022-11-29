@@ -65,6 +65,12 @@ class Post(models.Model): #Post 모델 생성
         # c.xlsx -> c xlsx
         # 하지만 a.b.c.txt -> a b c txt  1번지로 하면 b이니 마지막에 있는 것으로 지정하기 [-1]
 
+    def get_avatar_url(self):
+        if self.author.socialaccount_set.exists():
+            return self.author.socialaccount_set.first().get_avatar_url()
+        else:
+            return 'https://dummyimage.com/50x50/ced4da/6c757d.jpg'
+
 class Comment(models.Model):
     post=models.ForeignKey(Post, on_delete=models.CASCADE)
     author=models.ForeignKey(User, on_delete=models.CASCADE)
